@@ -18,11 +18,19 @@ export interface Transaction {
   arquivos: string[]
 }
 
+const valid = (array: string[]) =>
+  array.includes('SALDO_CORRENTE') ||
+  array.includes('VALOR_APLICACAO') ||
+  array.includes('APLICACAO')
+
 const Transactions = () => {
   const [year, setYear] = useState('')
   const [month, setMonth] = useState('')
 
   const [transactions] = useState<Transaction[]>(transactionsJSON)
+
+  const validTransactions = () =>
+    transactions.filter((value: Transaction) => valid(value.tipos))
 
   const transactionsByYear = () =>
     transactions.filter(
@@ -62,9 +70,35 @@ const Transactions = () => {
       0
     )
 
-  const meanReceptsYear = () => {}
+  const meanReceptsYear = () => {
+    const qtdCredit = transactions.filter(
+      (value: Transaction) =>
+        value.data.year === Number(year) && value.valor >= 0
+    )
 
-  const meanCostsYear = () => {}
+    const totalValue = transactionsByYear().reduce(
+      (total: number, current: Transaction) =>
+        total + (current.valor >= 0 ? 0 : current.valor),
+      0
+    )
+
+    return totalValue / qtdCredit
+  }
+
+  const meanCostsYear = () => {
+    const qtdCredit = transactions.filter(
+      (value: Transaction) =>
+        value.data.year === Number(year) && value.valor < 0
+    )
+
+    const totalValue = transactionsByYear().reduce(
+      (total: number, current: Transaction) =>
+        total + (current.valor < 0 ? 0 : current.valor),
+      0
+    )
+
+    return totalValue / qtdCredit
+  }
 
   const meanRestYear = () => {}
 
