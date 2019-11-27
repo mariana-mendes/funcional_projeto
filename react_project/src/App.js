@@ -3,13 +3,7 @@ import './App.css'
 import Transactions from './Transtactions'
 
 function App() {
-  return (
-    <div className='App'>
-      <header className='App-header'>
-        <Transactions></Transactions>
-      </header>
-    </div>
-  )
+  return <Transactions></Transactions>
 }
 
 export default App

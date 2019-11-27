@@ -114,7 +114,7 @@ const Transactions = () => {
   const flowYearAndMonth = () => {}
 
   return (
-    <div>
+    <div id='view'>
       <div className='row'>
         <div className='column'>
           <form id='divForm'>
@@ -151,6 +151,7 @@ const Transactions = () => {
                 Transações por ano
               </button>
             </div>
+
             <div>
               <button
                 onClick={() => {
@@ -161,6 +162,7 @@ const Transactions = () => {
                 Filtrar transações por ano e mês.
               </button>
             </div>
+
             <div>
               <button
                 onClick={() => {
@@ -176,7 +178,8 @@ const Transactions = () => {
             <div>
               <button
                 onClick={() => {
-                  console.log(debitByYearAndMonth())
+                  setResultNumber(debitByYearAndMonth())
+                  setFilteredTransactions(undefined)
                 }}
               >
                 Calcular o valor das despesas (débitos) em um determinado mês e
@@ -186,7 +189,8 @@ const Transactions = () => {
             <div>
               <button
                 onClick={() => {
-                  console.log(restYearAndMonth())
+                  setResultNumber(restYearAndMonth())
+                  setFilteredTransactions(undefined)
                 }}
               >
                 Calcular a sobra (receitas - despesas) de determinado mês e ano
@@ -196,7 +200,8 @@ const Transactions = () => {
             <div>
               <button
                 onClick={() => {
-                  console.log(restYearAndMonth())
+                  setResultNumber(restYearAndMonth())
+                  setFilteredTransactions(undefined)
                 }}
               >
                 Calcular o saldo final em um determinado ano e mês
@@ -217,7 +222,7 @@ const Transactions = () => {
                   console.log(minYearAndMonth())
                 }}
               >
-                Calcular o saldo máximo atingido em determinado ano e mês
+                Calcular o saldo mínimo atingido em determinado ano e mês
               </button>
             </div>
             <div>
