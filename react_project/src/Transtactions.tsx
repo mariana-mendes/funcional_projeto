@@ -29,6 +29,10 @@ const Transactions = () => {
   const [month, setMonth] = useState('')
 
   const [transactions] = useState<Transaction[]>(transactionsJSON)
+  const [filteredTransactions, setFilteredTransactions] = useState<
+    Transaction[] | undefined
+  >([])
+  const [resultNumber, setResultNumber] = useState(0)
 
   const validTransactions = (array: Transaction[]) =>
     array.filter((value: Transaction) => valid(value.tipos))
@@ -140,6 +144,7 @@ const Transactions = () => {
             <div>
               <button
                 onClick={() => {
+                  setFilteredTransactions(transactionsByYear())
                   console.log(transactionsByYear())
                 }}
               >
@@ -149,6 +154,7 @@ const Transactions = () => {
             <div>
               <button
                 onClick={() => {
+                  setFilteredTransactions(transactionsByYearAndMonth())
                   console.log(transactionsByYearAndMonth())
                 }}
               >
@@ -158,6 +164,8 @@ const Transactions = () => {
             <div>
               <button
                 onClick={() => {
+                  setResultNumber(creditByYearAndMonth())
+                  setFilteredTransactions(undefined)
                   console.log(creditByYearAndMonth())
                 }}
               >
@@ -176,27 +184,59 @@ const Transactions = () => {
               </button>
             </div>
             <div>
-              <button>
+              <button
+                onClick={() => {
+                  console.log(restYearAndMonth())
+                }}
+              >
                 Calcular a sobra (receitas - despesas) de determinado mês e ano
               </button>
             </div>
 
             <div>
-              <button>
-                {' '}
+              <button
+                onClick={() => {
+                  console.log(restYearAndMonth())
+                }}
+              >
                 Calcular o saldo final em um determinado ano e mês
               </button>
             </div>
             <div>
-              <button>
+              <button
+                onClick={() => {
+                  console.log(maxYearAndMonth())
+                }}
+              >
                 Calcular o saldo máximo atingido em determinado ano e mês
               </button>
             </div>
             <div>
-              <button> Calcular a média das receitas em determinado ano</button>
+              <button
+                onClick={() => {
+                  console.log(minYearAndMonth())
+                }}
+              >
+                Calcular o saldo máximo atingido em determinado ano e mês
+              </button>
             </div>
             <div>
-              <button> Calcular a média das sobras em determinado ano</button>
+              <button
+                onClick={() => {
+                  console.log(meanReceptsYear())
+                }}
+              >
+                Calcular a média das receitas em determinado ano
+              </button>
+            </div>
+            <div>
+              <button
+                onClick={() => {
+                  console.log(meanCostsYear())
+                }}
+              >
+                Calcular a média das sobras em determinado ano
+              </button>
             </div>
             <div>
               <button>Retornar o fluxo de caixa de determinado mês/ano.</button>
@@ -205,6 +245,13 @@ const Transactions = () => {
         </div>
         <div className='column'>
           <h2> RESULT </h2>
+          <ul>
+            {filteredTransactions &&
+              filteredTransactions.map((x: Transaction) => {
+                return <li> {x.textoIdentificador} </li>
+              })}
+          </ul>
+          <div>{resultNumber}</div>
         </div>
       </div>
     </div>
