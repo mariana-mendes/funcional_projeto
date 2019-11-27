@@ -27,6 +27,7 @@ const valid = (array: string[]) =>
 const Transactions = () => {
   const [year, setYear] = useState('')
   const [month, setMonth] = useState('')
+  const [fluxo, setFluxo] = useState<any>([])
 
   const [transactions] = useState<Transaction[]>(transactionsJSON)
   const [filteredTransactions, setFilteredTransactions] = useState<
@@ -109,9 +110,45 @@ const Transactions = () => {
     return totalValue / qtdCredit
   }
 
-  const meanRestYear = () => {}
+  const meanRestYear = () => {
+    return 1
+  }
 
-  const flowYearAndMonth = () => {}
+  const flowYearAndMonth = () => {
+    const ordered = validTransactions(transactionsByYearAndMonth()).sort(
+      (a: Transaction, b: Transaction) => {
+        if (a.data.dayOfMonth < b.data.dayOfMonth) {
+          return -1
+        }
+        if (a.data.dayOfMonth > b.data.dayOfMonth) {
+          return 1
+        } else {
+          return 0
+        }
+      }
+    )
+
+    let fluxos = []
+
+    for (let index = 1; index <= 31; index++) {
+      const perDay = ordered.filter(
+        (value: Transaction) => value.data.dayOfMonth === index
+      )
+
+      perDay.length !== 0 &&
+        fluxos.push(
+          'dia: ' +
+            index +
+            ' saldo:  ' +
+            perDay.reduce(
+              (total: number, current: Transaction) => total + current.valor,
+              0
+            )
+        )
+    }
+
+    setFluxo(fluxos)
+  }
 
   return (
     <div id='view'>
@@ -141,11 +178,12 @@ const Transactions = () => {
         </div>
         <div className='column'>
           <div>
+            {/* Filtrar transações por ano. */}
             <div>
               <button
                 onClick={() => {
                   setFilteredTransactions(transactionsByYear())
-                  console.log(transactionsByYear())
+                  setFluxo(null)
                 }}
               >
                 Transações por ano
@@ -156,7 +194,7 @@ const Transactions = () => {
               <button
                 onClick={() => {
                   setFilteredTransactions(transactionsByYearAndMonth())
-                  console.log(transactionsByYearAndMonth())
+                  setFluxo(null)
                 }}
               >
                 Filtrar transações por ano e mês.
@@ -168,7 +206,7 @@ const Transactions = () => {
                 onClick={() => {
                   setResultNumber(creditByYearAndMonth())
                   setFilteredTransactions(undefined)
-                  console.log(creditByYearAndMonth())
+                  setFluxo(null)
                 }}
               >
                 Calcular o valor das receitas (créditos) em um determinado mês e
@@ -179,6 +217,7 @@ const Transactions = () => {
               <button
                 onClick={() => {
                   setResultNumber(debitByYearAndMonth())
+                  setFluxo(null)
                   setFilteredTransactions(undefined)
                 }}
               >
@@ -190,6 +229,7 @@ const Transactions = () => {
               <button
                 onClick={() => {
                   setResultNumber(restYearAndMonth())
+                  setFluxo(null)
                   setFilteredTransactions(undefined)
                 }}
               >
@@ -201,6 +241,7 @@ const Transactions = () => {
               <button
                 onClick={() => {
                   setResultNumber(restYearAndMonth())
+                  setFluxo(null)
                   setFilteredTransactions(undefined)
                 }}
               >
@@ -210,7 +251,9 @@ const Transactions = () => {
             <div>
               <button
                 onClick={() => {
-                  console.log(maxYearAndMonth())
+                  setResultNumber(maxYearAndMonth())
+                  setFluxo(null)
+                  setFilteredTransactions(undefined)
                 }}
               >
                 Calcular o saldo máximo atingido em determinado ano e mês
@@ -219,7 +262,9 @@ const Transactions = () => {
             <div>
               <button
                 onClick={() => {
-                  console.log(minYearAndMonth())
+                  setResultNumber(minYearAndMonth())
+                  setFluxo(null)
+                  setFilteredTransactions(undefined)
                 }}
               >
                 Calcular o saldo mínimo atingido em determinado ano e mês
@@ -228,7 +273,9 @@ const Transactions = () => {
             <div>
               <button
                 onClick={() => {
-                  console.log(meanReceptsYear())
+                  setResultNumber(meanReceptsYear())
+                  setFluxo(null)
+                  setFilteredTransactions(undefined)
                 }}
               >
                 Calcular a média das receitas em determinado ano
@@ -237,14 +284,33 @@ const Transactions = () => {
             <div>
               <button
                 onClick={() => {
-                  console.log(meanCostsYear())
+                  setResultNumber(meanCostsYear())
+                  setFluxo(null)
+                  setFilteredTransactions(undefined)
+                }}
+              >
+                Calcular a média das despesas em determinado ano
+              </button>
+              <button
+                onClick={() => {
+                  setResultNumber(meanRestYear())
+                  setFluxo(null)
+                  setFilteredTransactions(undefined)
                 }}
               >
                 Calcular a média das sobras em determinado ano
               </button>
             </div>
             <div>
-              <button>Retornar o fluxo de caixa de determinado mês/ano.</button>
+              <button
+                onClick={() => {
+                  flowYearAndMonth()
+                  setResultNumber(0)
+                  setFilteredTransactions(undefined)
+                }}
+              >
+                Retornar o fluxo de caixa de determinado mês/ano.
+              </button>
             </div>
           </div>
         </div>
@@ -256,7 +322,13 @@ const Transactions = () => {
                 return <li> {x.textoIdentificador} </li>
               })}
           </ul>
-          <div>{resultNumber}</div>
+          <div>{resultNumber && resultNumber}</div>
+          <div>
+            {fluxo &&
+              fluxo.map((x: Transaction) => {
+                return <li> {x} </li>
+              })}
+          </div>
         </div>
       </div>
     </div>
