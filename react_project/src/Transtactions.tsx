@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import transactionsJSON from './transactions.json'
+import './form.css'
 
 export interface Transaction {
   data: {
@@ -29,8 +30,8 @@ const Transactions = () => {
 
   const [transactions] = useState<Transaction[]>(transactionsJSON)
 
-  const validTransactions = () =>
-    transactions.filter((value: Transaction) => valid(value.tipos))
+  const validTransactions = (array: Transaction[]) =>
+    array.filter((value: Transaction) => valid(value.tipos))
 
   const transactionsByYear = () =>
     transactions.filter(
@@ -43,14 +44,14 @@ const Transactions = () => {
     )
 
   const creditByYearAndMonth = () =>
-    transactionsByYearAndMonth().reduce(
+    validTransactions(transactionsByYearAndMonth()).reduce(
       (total: number, current: Transaction) =>
         total + (current.valor < 0 ? 0 : current.valor),
       0
     )
 
   const debitByYearAndMonth = () =>
-    transactionsByYearAndMonth().reduce(
+    validTransactions(transactionsByYearAndMonth()).reduce(
       (total: number, current: Transaction) =>
         total + (current.valor > 0 ? 0 : current.valor),
       0
@@ -71,12 +72,14 @@ const Transactions = () => {
     )
 
   const meanReceptsYear = () => {
-    const qtdCredit = transactions.filter(
-      (value: Transaction) =>
-        value.data.year === Number(year) && value.valor >= 0
-    )
+    const qtdCredit = validTransactions(
+      transactions.filter(
+        (value: Transaction) =>
+          value.data.year === Number(year) && value.valor >= 0
+      )
+    ).length
 
-    const totalValue = transactionsByYear().reduce(
+    const totalValue = validTransactions(transactionsByYear()).reduce(
       (total: number, current: Transaction) =>
         total + (current.valor >= 0 ? 0 : current.valor),
       0
@@ -86,12 +89,14 @@ const Transactions = () => {
   }
 
   const meanCostsYear = () => {
-    const qtdCredit = transactions.filter(
-      (value: Transaction) =>
-        value.data.year === Number(year) && value.valor < 0
-    )
+    const qtdCredit = validTransactions(
+      transactions.filter(
+        (value: Transaction) =>
+          value.data.year === Number(year) && value.valor < 0
+      )
+    ).length
 
-    const totalValue = transactionsByYear().reduce(
+    const totalValue = validTransactions(transactionsByYear()).reduce(
       (total: number, current: Transaction) =>
         total + (current.valor < 0 ? 0 : current.valor),
       0
@@ -106,78 +111,101 @@ const Transactions = () => {
 
   return (
     <div>
-      <div>
-        ano
-        <input
-          title='ANO'
-          type='text'
-          value={year}
-          onChange={event => {
-            setYear(event.target.value)
-          }}
-        />
-      </div>
-      <div>
-        mes
-        <input
-          title='MES'
-          type='text'
-          value={month}
-          onChange={event => {
-            setMonth(event.target.value)
-          }}
-        />
-      </div>
-      <div>
-        <button
-          onClick={() => {
-            console.log(transactionsByYear())
-          }}
-        >
-          Transações por ano
-        </button>
-      </div>
-      <div>
-        <button
-          onClick={() => {
-            console.log(transactionsByYearAndMonth())
-          }}
-        >
-          Filtrar transações por ano e mês.{' '}
-        </button>
-      </div>
-      <div>
-        <button>
-          Calcular o valor das receitas (créditos) em um determinado mês e ano.
-        </button>
-      </div>
-      <div>
-        <button>
-          Calcular o valor das despesas (débitos) em um determinado mês e ano.
-        </button>
-      </div>
-      <div>
-        <button>
-          Calcular a sobra (receitas - despesas) de determinado mês e ano
-        </button>
-      </div>
+      <div className='row'>
+        <div className='column'>
+          <form id='divForm'>
+            <label>Ano </label>
+            <input
+              title='ANO'
+              type='text'
+              value={year}
+              onChange={event => {
+                setYear(event.target.value)
+              }}
+            />
 
-      <div>
-        <button> Calcular o saldo final em um determinado ano e mês</button>
-      </div>
-      <div>
-        <button>
-          Calcular o saldo máximo atingido em determinado ano e mês
-        </button>
-      </div>
-      <div>
-        <button> Calcular a média das receitas em determinado ano</button>
-      </div>
-      <div>
-        <button> Calcular a média das sobras em determinado ano</button>
-      </div>
-      <div>
-        <button>Retornar o fluxo de caixa de determinado mês/ano.</button>
+            <label>Mes</label>
+            <input
+              title='MES'
+              type='text'
+              value={month}
+              onChange={event => {
+                setMonth(event.target.value)
+              }}
+            />
+          </form>
+        </div>
+        <div className='column'>
+          <div>
+            <div>
+              <button
+                onClick={() => {
+                  console.log(transactionsByYear())
+                }}
+              >
+                Transações por ano
+              </button>
+            </div>
+            <div>
+              <button
+                onClick={() => {
+                  console.log(transactionsByYearAndMonth())
+                }}
+              >
+                Filtrar transações por ano e mês.
+              </button>
+            </div>
+            <div>
+              <button
+                onClick={() => {
+                  console.log(creditByYearAndMonth())
+                }}
+              >
+                Calcular o valor das receitas (créditos) em um determinado mês e
+                ano.
+              </button>
+            </div>
+            <div>
+              <button
+                onClick={() => {
+                  console.log(debitByYearAndMonth())
+                }}
+              >
+                Calcular o valor das despesas (débitos) em um determinado mês e
+                ano.
+              </button>
+            </div>
+            <div>
+              <button>
+                Calcular a sobra (receitas - despesas) de determinado mês e ano
+              </button>
+            </div>
+
+            <div>
+              <button>
+                {' '}
+                Calcular o saldo final em um determinado ano e mês
+              </button>
+            </div>
+            <div>
+              <button>
+                Calcular o saldo máximo atingido em determinado ano e mês
+              </button>
+            </div>
+            <div>
+              <button> Calcular a média das receitas em determinado ano</button>
+            </div>
+            <div>
+              <button> Calcular a média das sobras em determinado ano</button>
+            </div>
+            <div>
+              <button>Retornar o fluxo de caixa de determinado mês/ano.</button>
+            </div>
+          </div>
+        </div>
+        <div className='column'>
+          <h2> RESULT </h2>
+        </div>
       </div>
     </div>
   )
