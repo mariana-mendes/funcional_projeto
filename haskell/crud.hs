@@ -71,6 +71,7 @@ getAllExpenseByYear y dado =  [(valor x) | x <- dado, ( year (data_ x)) == y, ( 
 getJSON :: IO B.ByteString
 getJSON = B.readFile "data.json"
 
+--- Filtrar transações por ano.
 filterByYear :: Int -> IO()
 filterByYear y = do
   json <- (eitherDecode <$> getJSON) :: IO (Either String [Transaction])
@@ -80,6 +81,7 @@ filterByYear y = do
 
 filterByYear_ d y = [x | x <- d, (year (data_ x)) == y ]
 
+--- Filtrar transações por ano e mês.
 filterByYearMonth :: Int -> Int -> IO()
 filterByYearMonth y m= do
   json <- (eitherDecode <$> getJSON) :: IO (Either String [Transaction])
@@ -87,7 +89,7 @@ filterByYearMonth y m= do
     Left err -> putStrLn err
     Right d -> print (filterByMonthYear m y d)
 
-
+--- Calcular o valor das receitas (créditos) em um determinado mês e ano.
 getIncome  :: Int -> Int -> IO()
 getIncome m y  = do
   json <- (eitherDecode <$> getJSON) :: IO (Either String [Transaction])
@@ -95,6 +97,7 @@ getIncome m y  = do
     Left err -> putStrLn err
     Right d -> print (sum (getAllIncome m y (cleanData d)))
 
+--- Calcular o valor das despesas (débitos) em um determinado mês e ano.
 getExpense  :: Int -> Int -> IO()
 getExpense m y  = do
   json <- (eitherDecode <$> getJSON) :: IO (Either String [Transaction])
@@ -102,6 +105,7 @@ getExpense m y  = do
     Left err -> putStrLn err
     Right d -> print (sum (getAllExpense m y (cleanData d)))
 
+--- Calcular a sobra (receitas - despesas) de determinado mês e ano
 getLeftOver :: Int -> Int -> IO()
 getLeftOver m y = do
   json <- (eitherDecode <$> getJSON) :: IO (Either String [Transaction])
@@ -111,7 +115,7 @@ getLeftOver m y = do
 
 getLeftOver_ d m y = sum (getAllIncome m y (cleanData d)) - sum (getAllExpense m y (cleanData d)) 
   
-
+--- Calcular a média das sobras em determinado ano
 getMeanLeftOver :: Int -> IO()
 getMeanLeftOver y = do
   json <- (eitherDecode <$> getJSON) :: IO (Either String [Transaction])
@@ -121,6 +125,7 @@ getMeanLeftOver y = do
 
 getMeanLeftOver_ d y = (sum (getAllIncomeByYear y (cleanData d)) - sum (getAllExpenseByYear y (cleanData d)) ) / (fromIntegral (Prelude.length  (getAllExpenseByYear y (cleanData d))))
 
+--- Calcular o saldo máximo atingido em determinado ano e mês
 getMaxBalance :: Int -> Int -> IO ()
 getMaxBalance m y = do
   json <- (eitherDecode <$> getJSON) :: IO (Either String [Transaction])
@@ -128,6 +133,7 @@ getMaxBalance m y = do
     Left err -> putStrLn err
     Right d -> print (getMax (filterByMonthYear m y (cleanData d)))
 
+--- Calcular o saldo mínimo atingido em determinado ano e mês
 getMinBalance :: Int -> Int -> IO ()
 getMinBalance m y = do
   json <- (eitherDecode <$> getJSON) :: IO (Either String [Transaction])
@@ -135,6 +141,7 @@ getMinBalance m y = do
     Left err -> putStrLn err
     Right d -> print (getMin (filterByMonthYear m y (cleanData d)))
 
+--- Calcular a média das receitas em determinado ano
 getMeanIncomeByYear :: Int -> IO ()
 getMeanIncomeByYear y = do
   json <- (eitherDecode <$> getJSON) :: IO (Either String [Transaction])
@@ -144,6 +151,7 @@ getMeanIncomeByYear y = do
 
 getMeanIncomeByYear_ d y = (sum  (getAllIncomeByYear y (cleanData d))) / (fromIntegral (Prelude.length  (getAllIncomeByYear y (cleanData d))))
 
+--- Calcular a média das despesas em determinado ano
 getMeanExpenseByYear :: Int -> IO ()
 getMeanExpenseByYear y = do
   json <- (eitherDecode <$> getJSON) :: IO (Either String [Transaction])
@@ -153,6 +161,7 @@ getMeanExpenseByYear y = do
 
 getMeanExpenseByYear_ d y = (sum  (getAllExpenseByYear y (cleanData d))) / (fromIntegral (Prelude.length  (getAllExpenseByYear y (cleanData d))))
 
+--- Retornar o fluxo de caixa de determinado mês/ano. O fluxo de caixa nada mais é do que uma lista contendo pares (dia,saldoFinalDoDia).
 getFlux :: Int -> Int -> IO ()
 getFlux m y = do
   json <- (eitherDecode <$> getJSON) :: IO (Either String [Transaction])
